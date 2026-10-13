@@ -1,0 +1,86 @@
+﻿
+@model System.Data.DataTable
+
+@{
+    ViewBag.Title = "Inventory Management";
+}
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">
+        📦 Inventory Management System
+    </h2>
+
+    <div class="mb-3">
+        <a href="@Url.Action("Create", "Product")"
+           class="btn btn-primary">
+            + Add New Product
+        </a>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Message"]
+        </div>
+    }
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price (₹)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null && Model.Rows.Count > 0)
+            {
+                foreach (System.Data.DataRow row in Model.Rows)
+                {
+                    int productId = Convert.ToInt32(row["ProductId"]);
+
+                    <tr>
+                        <td>@productId</td>
+                        <td>@row["ProductName"]</td>
+                        <td>@row["Quantity"]</td>
+                        <td>₹@row["Price"]</td>
+
+                        <td>
+                            <a class="btn btn-warning btn-sm"
+                               href="@Url.Action("Edit", "Product",
+                           new { id = productId })">
+                                Edit
+                            </a>
+
+                            @using (Html.BeginForm("Delete", "Product",
+                                new { id = productId },
+                                FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this product?');">
+                                    Delete
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No products found. Please add a new product.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
